@@ -340,6 +340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   natureDevotee: {fileID: 1949541363110912242, guid: 998fc6cd81f7d5849a344dd58eb7eeab, type: 3}
+  natureTemple: {fileID: 3914490989915537764, guid: 6d6fd8b568a0b404983675186440850c, type: 3}
 --- !u!65 &263185243
 BoxCollider:
   m_ObjectHideFlags: 0

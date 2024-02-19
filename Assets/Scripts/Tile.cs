@@ -13,17 +13,58 @@ public class Tile : MonoBehaviour
     private GameObject currentPiece;
     private ushort neighboursCount;
     private List<Tile> neighbours;
+    private Vector3 piecePosition;
 
     // Start is called before the first frame update
     void Start()
     {
         neighbours = GetNeighbours();
         GetDirections();
+
+        piecePosition.x = transform.position.x;
+        piecePosition.y = transform.position.y + 0.2f;
+        piecePosition.z = transform.position.z;
+
+        if (currentPiece != null)
+        {
+            currentPiece.transform.position = piecePosition;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+    }
+
+    public GameObject GetPiece()
+    {
+        return currentPiece;
+    }
+
+    public void SetPiece(GameObject piece)
+    {
+        if (currentPiece == null || currentPiece.name != piece.name)
+        {
+            currentPiece = Instantiate(piece);
+            currentPiece.transform.position = piecePosition;
+        }
+    }
+
+    public void OnMouseDown()
+    {
+        PlacePiece();
+    }
+
+    public void OnMouseEnter()
+    {
+        ShowGhost();
+    }
+
+    public void OnMouseExit()
+    {
+        if(currentPiece != null) return;
+
+        board.GetGhost().SetActive(false);
     }
 
     private void FixedUpdate()
@@ -51,61 +92,6 @@ public class Tile : MonoBehaviour
         }
 
         return neighbours;
-    }
-
-    private bool CanUserPlacePiece()
-    {
-        if(currentPiece != null)
-        {
-            return false;
-        }
-
-        var neighboursCount = 0;
-        foreach(var neighbour in neighbours)
-        {
-            if(neighbour.GetPiece() != null)
-            {
-                neighboursCount++;
-            }
-        }
-
-        if(neighboursCount > 2)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private void ShowGhost()
-    {
-        if (!CanUserPlacePiece()) return;
-
-        var ghost = board.GetGhost();
-
-        ghost.SetActive(true);
-
-        var newPosition = new Vector3();
-        newPosition.x = transform.position.x;
-        newPosition.y = transform.position.y + 0.2f;
-        newPosition.z = transform.position.z;
-
-        ghost.transform.SetPositionAndRotation(newPosition, transform.rotation);
-        ghost.SetActive(true);
-    }
-
-    private void PlacePiece()
-    {
-        if (!CanUserPlacePiece()) return;
-
-        currentPiece = board.GetPiece();
-
-        var newPosition = new Vector3();
-        newPosition.x = transform.position.x;
-        newPosition.y = transform.position.y + 0.2f;
-        newPosition.z = transform.position.z;
-
-        currentPiece.transform.position = newPosition;
     }
 
     private Vector3[] GetDirections()
@@ -143,33 +129,64 @@ public class Tile : MonoBehaviour
         return directions;
     }
 
-    public GameObject GetPiece()
+    private bool CanUserPlacePiece()
     {
-        return currentPiece;
-    }
-
-    public void SetPiece(GameObject piece)
-    {
-        if (currentPiece == null || currentPiece.name != piece.name)
+        if (currentPiece != null)
         {
-            currentPiece = Instantiate(piece, transform.position, transform.rotation);
+            return false;
         }
+
+        var neighboursCount = 0;
+        foreach (var neighbour in neighbours)
+        {
+            if (neighbour.GetPiece() != null)
+            {
+                neighboursCount++;
+            }
+        }
+
+        if (neighboursCount > 2)
+        {
+            return false;
+        }
+
+        return true;
     }
 
-    public void OnMouseDown()
+    private void ShowGhost()
     {
-        PlacePiece();
+        if (!CanUserPlacePiece()) return;
+
+        var ghost = board.GetGhost();
+
+        ghost.SetActive(true);
+
+        ghost.transform.SetPositionAndRotation(piecePosition, transform.rotation);
+        ghost.SetActive(true);
     }
 
-    public void OnMouseEnter()
+    private void PlacePiece()
     {
-        ShowGhost();
+        if (!CanUserPlacePiece()) return;
+
+        currentPiece = board.GetPiece();
+
+        currentPiece.transform.position = piecePosition;
     }
 
-    public void OnMouseExit()
+    // TODO: implement this function
+    private void AddTempleConnectedObserver(Tile tile)
     {
-        if(currentPiece != null) return;
+        // Add the tile in a list and call it once we know if we're connected
+    }
 
-        board.GetGhost().SetActive(false);
+    // TODO: implement this function
+    private void NotifyTempleConnectedObservers(Tile tile, bool isConnected)
+    {
+        // keep a record of the neighbours and their connected status
+
+        // if at least one is connected, then this tile is connected too
+
+        // if the connection status changes notify the observers
     }
 }

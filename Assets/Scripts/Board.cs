@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 public class Board : MonoBehaviour
 {
     public GameObject natureDevotee;
+    public GameObject natureTemple;
 
     private GameObject ghost;
 
@@ -16,6 +17,15 @@ public class Board : MonoBehaviour
         ghost = Instantiate(natureDevotee);
         ChangeAlpha(ghost, 0.5f);
         ghost.SetActive(false);
+
+        var childCount = gameObject.transform.childCount;
+        int childId = Random.Range(0, childCount - 1);
+
+        gameObject
+            .transform
+            .GetChild(childId)
+            .GetComponent<Tile>()
+            .SetPiece(natureTemple);
     }
 
     static void ChangeAlpha(GameObject gameObject, float alpha) {

@@ -6,33 +6,19 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public enum TileCamp
-{
-    Nature
-}
-
-public enum TileType
-{
-    Empty, Temple, Devotee
-}
-
 public class Tile : MonoBehaviour
 {
     public Board board;
 
-    private GameObject currentPiece;
+    private Piece currentPiece;
     private ushort neighboursCount;
     private List<Tile> neighbours;
     private Vector3 piecePosition;
     private bool tileIsTempleConnected;
-    private TileType tileType;
-    private TileCamp tileCamp;
 
     private void Awake()
     {
         tileIsTempleConnected = false;
-        tileType = TileType.Empty;
-        tileCamp = TileCamp.Nature;
     }
 
     // Start is called before the first frame update
@@ -55,34 +41,45 @@ public class Tile : MonoBehaviour
     {
     }
 
-    public GameObject GetPiece()
+    public Piece GetPiece()
     {
         return currentPiece;
     }
 
-    public void SetPiece(GameObject piece)
+    public void SetPiece(Piece piece)
     {
-        if (currentPiece == null || currentPiece.name != piece.name)
+        if (piece.IsPieceEqual(currentPiece))
         {
-            currentPiece = Instantiate(piece);
-            currentPiece.transform.position = piecePosition;
+            return;
+        }
+       
+        currentPiece = Instantiate(piece);
+        currentPiece.transform.position = piecePosition;
 
-            if (piece.name.Contains("temple"))
-            {
-                tileIsTempleConnected = true;
-                tileType = TileType.Temple;
-            }
+        if (piece.name.Contains("temple"))
+        {
+            tileIsTempleConnected = true;
         }
     }
 
-    public TileType GetTileType()
+    public PieceType GetTileType()
     {
-        return tileType;
+        if(currentPiece == null)
+        {
+            return PieceType.Empty;
+        }
+
+        return currentPiece.GetPieceType();
     }
 
-    public TileCamp GetTileCamp()
+    public PieceCamp GetTileCamp()
     {
-        return tileCamp;
+        if(currentPiece == null)
+        {
+            return PieceCamp.Neutral;
+        }
+
+        return currentPiece.GetPieceCamp();
     }
 
     public bool IsTempleConnected()
@@ -104,7 +101,7 @@ public class Tile : MonoBehaviour
     {
         if(currentPiece != null) return;
 
-        board.GetGhost().SetActive(false);
+        board.GetGhost().gameObject.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -178,8 +175,7 @@ public class Tile : MonoBehaviour
 
         foreach(var neighbour in neighbours)
         {
-            Debug.Log(neighbour.GetTileType());
-            if (neighbour.GetTileCamp() == tileCamp && neighbour.IsTempleConnected())
+            if (GetTileCamp() == PieceCamp.Neutral && neighbour.IsTempleConnected())
             {
                 return true;
             }
@@ -194,10 +190,9 @@ public class Tile : MonoBehaviour
 
         var ghost = board.GetGhost();
 
-        ghost.SetActive(true);
+        ghost.gameObject.SetActive(true);
 
         ghost.transform.SetPositionAndRotation(piecePosition, transform.rotation);
-        ghost.SetActive(true);
     }
 
     private void PlacePiece()
@@ -209,18 +204,6 @@ public class Tile : MonoBehaviour
         currentPiece.transform.position = piecePosition;
 
         tileIsTempleConnected = true;
-
-        if(currentPiece.name.Contains("temple"))
-        {
-            tileType = TileType.Temple;
-        } else if(currentPiece.name.Contains("devotee")) {
-            tileType = TileType.Devotee;
-        }
-
-        if(currentPiece.name.Contains("nature"))
-        {
-            tileCamp = TileCamp.Nature;
-        }
     }
 
     // TODO: implement this function

@@ -6,17 +6,17 @@ using UnityEngine.Tilemaps;
 
 public class Board : MonoBehaviour
 {
-    public GameObject natureDevotee;
-    public GameObject natureTemple;
+    public Piece natureDevotee;
+    public Piece natureTemple;
 
-    private GameObject ghost;
+    private Piece ghost;
 
     // Start is called before the first frame update
     void Start()
     {
         ghost = Instantiate(natureDevotee);
-        ChangeAlpha(ghost, 0.5f);
-        ghost.SetActive(false);
+        ChangeAlpha(ghost.gameObject, 0.5f);
+        ghost.gameObject.SetActive(false);
 
         var childCount = gameObject.transform.childCount;
         int childId = Random.Range(0, childCount - 1);
@@ -59,12 +59,12 @@ public class Board : MonoBehaviour
     private void FixedUpdate()
     { }
 
-    public GameObject GetGhost()
+    public Piece GetGhost()
     {
         return ghost;
     }
 
-    public GameObject GetPiece()
+    public Piece GetPiece()
     {
         return Instantiate(natureDevotee);
     }

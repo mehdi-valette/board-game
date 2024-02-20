@@ -6,6 +6,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum TileCamp
+{
+    Nature
+}
+
+public enum TileType
+{
+    Empty, Temple, Devotee
+}
+
 public class Tile : MonoBehaviour
 {
     public Board board;
@@ -14,12 +24,21 @@ public class Tile : MonoBehaviour
     private ushort neighboursCount;
     private List<Tile> neighbours;
     private Vector3 piecePosition;
+    private bool tileIsTempleConnected;
+    private TileType tileType;
+    private TileCamp tileCamp;
+
+    private void Awake()
+    {
+        tileIsTempleConnected = false;
+        tileType = TileType.Empty;
+        tileCamp = TileCamp.Nature;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         neighbours = GetNeighbours();
-        GetDirections();
 
         piecePosition.x = transform.position.x;
         piecePosition.y = transform.position.y + 0.2f;
@@ -47,7 +66,28 @@ public class Tile : MonoBehaviour
         {
             currentPiece = Instantiate(piece);
             currentPiece.transform.position = piecePosition;
+
+            if (piece.name.Contains("temple"))
+            {
+                tileIsTempleConnected = true;
+                tileType = TileType.Temple;
+            }
         }
+    }
+
+    public TileType GetTileType()
+    {
+        return tileType;
+    }
+
+    public TileCamp GetTileCamp()
+    {
+        return tileCamp;
+    }
+
+    public bool IsTempleConnected()
+    {
+        return tileIsTempleConnected;
     }
 
     public void OnMouseDown()
@@ -136,21 +176,16 @@ public class Tile : MonoBehaviour
             return false;
         }
 
-        var neighboursCount = 0;
-        foreach (var neighbour in neighbours)
+        foreach(var neighbour in neighbours)
         {
-            if (neighbour.GetPiece() != null)
+            Debug.Log(neighbour.GetTileType());
+            if (neighbour.GetTileCamp() == tileCamp && neighbour.IsTempleConnected())
             {
-                neighboursCount++;
+                return true;
             }
         }
 
-        if (neighboursCount > 2)
-        {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     private void ShowGhost()
@@ -172,6 +207,20 @@ public class Tile : MonoBehaviour
         currentPiece = board.GetPiece();
 
         currentPiece.transform.position = piecePosition;
+
+        tileIsTempleConnected = true;
+
+        if(currentPiece.name.Contains("temple"))
+        {
+            tileType = TileType.Temple;
+        } else if(currentPiece.name.Contains("devotee")) {
+            tileType = TileType.Devotee;
+        }
+
+        if(currentPiece.name.Contains("nature"))
+        {
+            tileCamp = TileCamp.Nature;
+        }
     }
 
     // TODO: implement this function

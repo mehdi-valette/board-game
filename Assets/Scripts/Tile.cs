@@ -48,7 +48,16 @@ public class Tile : MonoBehaviour
 
     public void SetPiece(Piece piece)
     {
-        if (piece.IsPieceEqual(currentPiece))
+        // TODO: properly destroy the currentPiece
+        if (piece == null && currentPiece.GetPieceType() != PieceType.Temple)
+        {
+            Destroy(currentPiece.gameObject);
+            currentPiece = null;
+            tileIsTempleConnected = false;
+            return;
+        }
+
+        if (currentPiece != null)
         {
             return;
         }
@@ -56,10 +65,7 @@ public class Tile : MonoBehaviour
         currentPiece = Instantiate(piece);
         currentPiece.transform.position = piecePosition;
 
-        if (piece.name.Contains("temple"))
-        {
-            tileIsTempleConnected = true;
-        }
+        tileIsTempleConnected = true;
     }
 
     public PieceType GetTileType()
@@ -89,6 +95,12 @@ public class Tile : MonoBehaviour
 
     public void OnMouseDown()
     {
+        if(Input.GetKey(KeyCode.LeftShift))
+        {
+            SetPiece(null);
+            return;
+        }
+
         PlacePiece();
     }
 

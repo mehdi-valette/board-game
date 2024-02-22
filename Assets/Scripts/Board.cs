@@ -10,10 +10,13 @@ public class Board : MonoBehaviour
     public Piece natureTemple;
 
     private Piece ghost;
+    private List<List<Tile>> groups;
 
     // Start is called before the first frame update
     void Start()
     {
+        groups = new List<List<Tile>>();
+
         ghost = Instantiate(natureDevotee);
         ChangeAlpha(ghost.gameObject, 0.5f);
         ghost.gameObject.SetActive(false);
@@ -21,11 +24,17 @@ public class Board : MonoBehaviour
         var childCount = gameObject.transform.childCount;
         int childId = Random.Range(0, childCount - 1);
 
-        gameObject
+        var firstTempleTile = gameObject
             .transform
             .GetChild(childId)
-            .GetComponent<Tile>()
-            .SetPiece(natureTemple);
+            .GetComponent<Tile>();
+
+        var firstGroup = new List<Tile> { firstTempleTile };
+
+        groups.Add(firstGroup);
+
+        firstTempleTile.SetPiece(natureTemple);
+        firstTempleTile.SetGroup(firstGroup);
     }
 
     static void ChangeAlpha(GameObject gameObject, float alpha) {
@@ -67,5 +76,10 @@ public class Board : MonoBehaviour
     public Piece GetPiece()
     {
         return Instantiate(natureDevotee);
+    }
+
+    public PieceCamp GetPieceCamp()
+    {
+        return PieceCamp.Nature;
     }
 }

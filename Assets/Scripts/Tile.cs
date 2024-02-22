@@ -14,11 +14,11 @@ public class Tile : MonoBehaviour
     private ushort neighboursCount;
     private List<Tile> neighbours;
     private Vector3 piecePosition;
-    private bool tileIsTempleConnected;
+    private List<Tile> tileGroup;
 
     private void Awake()
     {
-        tileIsTempleConnected = false;
+        tileGroup = null;
     }
 
     // Start is called before the first frame update
@@ -55,8 +55,16 @@ public class Tile : MonoBehaviour
        
         currentPiece = Instantiate(piece);
         currentPiece.transform.position = piecePosition;
+    }
 
-        tileIsTempleConnected = true;
+    public List<Tile> GetTileGroup()
+    {
+        return tileGroup;
+    }
+
+    public void SetGroup(List<Tile> group)
+    {
+        this.tileGroup = group;
     }
 
     public PieceType GetTileType()
@@ -81,7 +89,7 @@ public class Tile : MonoBehaviour
 
     public bool IsTempleConnected()
     {
-        return tileIsTempleConnected;
+        return tileGroup != null;
     }
 
     public void OnMouseDown()
@@ -119,7 +127,6 @@ public class Tile : MonoBehaviour
         }
 
         Destroy(currentPiece.gameObject);
-        tileIsTempleConnected = false;
     }
 
     private List<Tile> GetNeighbours()
@@ -180,16 +187,31 @@ public class Tile : MonoBehaviour
         return directions;
     }
 
-    private bool CanUserPlacePiece()
+    private bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
     {
-        if (currentPiece != null)
+        if (neighbour.GetTileGroup() == null)
         {
             return false;
         }
 
-        foreach(var neighbour in neighbours)
+        if (neighbour.GetTileCamp() != camp)
         {
-            if (GetTileCamp() == PieceCamp.Neutral && neighbour.IsTempleConnected())
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CanPlacePiece(PieceCamp camp)
+    {
+        if (GetTileCamp() != PieceCamp.Neutral)
+        {
+            return false;
+        }
+
+        foreach (var neighbour in neighbours)
+        {
+            if (IsFriendlyNeighbour(neighbour, camp))
             {
                 return true;
             }
@@ -198,9 +220,22 @@ public class Tile : MonoBehaviour
         return false;
     }
 
+    private List<Tile> GetFriendlyNeighbourGroup(PieceCamp camp)
+    {
+        foreach(var neighbour in neighbours)
+        {
+            if (IsFriendlyNeighbour(neighbour, camp))
+            {
+                return neighbour.GetTileGroup();
+            }
+        }
+
+        return null;
+    }
+
     private void ShowGhost()
     {
-        if (!CanUserPlacePiece()) return;
+        if (!CanPlacePiece(board.GetPieceCamp())) return;
 
         var ghost = board.GetGhost();
 
@@ -211,12 +246,13 @@ public class Tile : MonoBehaviour
 
     private void PlacePiece()
     {
-        if (!CanUserPlacePiece()) return;
+        var candidateGroup = GetFriendlyNeighbourGroup(board.GetPieceCamp());
+        if (candidateGroup == null) return;
 
         currentPiece = board.GetPiece();
 
         currentPiece.transform.position = piecePosition;
 
-        tileIsTempleConnected = true;
+        tileGroup = candidateGroup;
     }
 }

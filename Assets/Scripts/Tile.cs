@@ -48,13 +48,6 @@ public class Tile : MonoBehaviour
 
     public void SetPiece(Piece piece)
     {
-        // TODO: properly destroy the currentPiece
-        if (piece == null && currentPiece.GetPieceType() != PieceType.Temple)
-        {
-            DestroyPiece();
-            return;
-        }
-
         if (currentPiece != null)
         {
             return;
@@ -95,7 +88,7 @@ public class Tile : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftShift))
         {
-            SetPiece(null);
+            DestroyPiece();
             return;
         }
 
@@ -120,6 +113,11 @@ public class Tile : MonoBehaviour
 
     private void DestroyPiece()
     {
+        if(currentPiece == null || currentPiece.GetPieceType() == PieceType.Temple)
+        {
+            return;
+        }
+
         Destroy(currentPiece.gameObject);
         tileIsTempleConnected = false;
     }

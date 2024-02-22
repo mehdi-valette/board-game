@@ -51,9 +51,7 @@ public class Tile : MonoBehaviour
         // TODO: properly destroy the currentPiece
         if (piece == null && currentPiece.GetPieceType() != PieceType.Temple)
         {
-            Destroy(currentPiece.gameObject);
-            currentPiece = null;
-            tileIsTempleConnected = false;
+            DestroyPiece();
             return;
         }
 
@@ -118,6 +116,12 @@ public class Tile : MonoBehaviour
 
     private void FixedUpdate()
     {
+    }
+
+    private void DestroyPiece()
+    {
+        Destroy(currentPiece.gameObject);
+        tileIsTempleConnected = false;
     }
 
     private List<Tile> GetNeighbours()
@@ -216,21 +220,5 @@ public class Tile : MonoBehaviour
         currentPiece.transform.position = piecePosition;
 
         tileIsTempleConnected = true;
-    }
-
-    // TODO: implement this function
-    private void AddTempleConnectedObserver(Tile tile)
-    {
-        // Add the tile in a list and call it once we know if we're connected
-    }
-
-    // TODO: implement this function
-    private void NotifyTempleConnectedObservers(Tile tile, bool isConnected)
-    {
-        // keep a record of the neighbours and their connected status
-
-        // if at least one is connected, then this tile is connected too
-
-        // if the connection status changes notify the observers
     }
 }

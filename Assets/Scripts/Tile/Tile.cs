@@ -14,7 +14,7 @@ public class Tile : MonoBehaviour
     private ushort neighboursCount;
     private List<Tile> neighbours;
     private Vector3 piecePosition;
-    private List<Tile> tileGroup;
+    private TileGroup tileGroup;
 
     private void Awake()
     {
@@ -24,7 +24,7 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        neighbours = GetNeighbours();
+        neighbours = Neighbours.GetNeighbours(transform);
 
         piecePosition.x = transform.position.x;
         piecePosition.y = transform.position.y + 0.2f;
@@ -39,6 +39,11 @@ public class Tile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+
+    public List<Tile> GetNeighbours()
+    {
+        return neighbours;
     }
 
     public Piece GetPiece()
@@ -57,12 +62,12 @@ public class Tile : MonoBehaviour
         currentPiece.transform.position = piecePosition;
     }
 
-    public List<Tile> GetTileGroup()
+    public TileGroup GetTileGroup()
     {
         return tileGroup;
     }
 
-    public void SetGroup(List<Tile> group)
+    public void SetGroup(TileGroup group)
     {
         this.tileGroup = group;
     }
@@ -96,7 +101,7 @@ public class Tile : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftShift))
         {
-            DestroyPiece();
+            RemoveTileFromGroup();
             return;
         }
 
@@ -119,75 +124,27 @@ public class Tile : MonoBehaviour
     {
     }
 
-    private void DestroyPiece()
+    public void ClearTile()
+    {
+        if (currentPiece == null) return;
+
+        Destroy(currentPiece.gameObject);
+        currentPiece = null;
+    }
+
+    private void RemoveTileFromGroup()
     {
         if(currentPiece == null || currentPiece.GetPieceType() == PieceType.Temple)
         {
             return;
         }
 
-        Destroy(currentPiece.gameObject);
+        ClearTile();
+
+        tileGroup.RemoveMember(this);
     }
 
-    private List<Tile> GetNeighbours()
-    {
-        var neighbours = new List<Tile>();
-        var directions = GetDirections();
-
-
-        foreach (var direction in directions)
-        {
-
-            Physics.Raycast(transform.position, direction, out RaycastHit hit, 3f);
-
-            if (
-                hit.collider != null &&
-                hit.collider.GetComponent<Tile>() != null
-            )
-            {
-                neighbours.Add(hit.collider.GetComponent<Tile>());
-            }
-        }
-
-        return neighbours;
-    }
-
-    private Vector3[] GetDirections()
-    {
-        var directions = new Vector3[6];
-
-        var topRight = transform.position;
-        topRight.x += 0.8f;
-        topRight.z += 1.5f;
-        directions[0] = transform.position - topRight;
-
-        var bottomRight = transform.position;
-        bottomRight.x += 0.8f;
-        bottomRight.z -= 1.5f;
-        directions[1] = transform.position - bottomRight;
-
-        var bottomLeft = transform.position;
-        bottomLeft.x -= 0.8f;
-        bottomLeft.z -= 1.5f;
-        directions[2] = transform.position - bottomLeft;
-
-        var topLeft = transform.position;
-        topLeft.x -= 0.8f;
-        topLeft.z += 1.5f;
-        directions[3] = transform.position - topLeft;
-
-        var left = transform.position;
-        left.x -= 1.5f;
-        directions[4] = transform.position - left;
-
-        var right = transform.position;
-        right.x += 1.5f;
-        directions[5] = transform.position - right;
-
-        return directions;
-    }
-
-    private bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
+    static public bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
     {
         if (neighbour.GetTileGroup() == null)
         {
@@ -220,17 +177,34 @@ public class Tile : MonoBehaviour
         return false;
     }
 
-    private List<Tile> GetFriendlyNeighbourGroup(PieceCamp camp)
+    private TileGroup GetGroupForInsert(PieceCamp camp)
     {
+        HashSet<TileGroup> groups = new HashSet<TileGroup>();
+
         foreach(var neighbour in neighbours)
         {
             if (IsFriendlyNeighbour(neighbour, camp))
             {
-                return neighbour.GetTileGroup();
+                groups.Add(neighbour.GetTileGroup());
             }
         }
 
-        return null;
+        if (groups.Count == 0) return null;
+
+        TileGroup firstGroup = null;
+
+        foreach (var group in groups)
+        {
+            if (firstGroup == null)
+            {
+                firstGroup = group;
+                continue;
+            }
+
+            group.MergeIntoOtherGroup(firstGroup);
+        }
+
+        return firstGroup;
     }
 
     private void ShowGhost()
@@ -246,13 +220,13 @@ public class Tile : MonoBehaviour
 
     private void PlacePiece()
     {
-        var candidateGroup = GetFriendlyNeighbourGroup(board.GetPieceCamp());
+        var candidateGroup = GetGroupForInsert(board.GetPieceCamp());
         if (candidateGroup == null) return;
 
         currentPiece = board.GetPiece();
 
         currentPiece.transform.position = piecePosition;
 
-        tileGroup = candidateGroup;
+        candidateGroup.AddMember(this);
     }
 }

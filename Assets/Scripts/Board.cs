@@ -10,12 +10,12 @@ public class Board : MonoBehaviour
     public Piece natureTemple;
 
     private Piece ghost;
-    private List<List<Tile>> groups;
+    private List<TileGroup> groups;
 
     // Start is called before the first frame update
     void Start()
     {
-        groups = new List<List<Tile>>();
+        groups = new List<TileGroup>();
 
         ghost = Instantiate(natureDevotee);
         ChangeAlpha(ghost.gameObject, 0.5f);
@@ -29,12 +29,10 @@ public class Board : MonoBehaviour
             .GetChild(childId)
             .GetComponent<Tile>();
 
-        var firstGroup = new List<Tile> { firstTempleTile };
+        firstTempleTile.SetPiece(natureTemple);
+        var firstGroup = new TileGroup(new HashSet<Tile> { firstTempleTile });
 
         groups.Add(firstGroup);
-
-        firstTempleTile.SetPiece(natureTemple);
-        firstTempleTile.SetGroup(firstGroup);
     }
 
     static void ChangeAlpha(GameObject gameObject, float alpha) {

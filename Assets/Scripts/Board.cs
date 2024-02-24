@@ -11,6 +11,7 @@ public class Board : MonoBehaviour
 
     private Piece ghost;
     private List<TileGroup> groups;
+    private string id;
 
     // Start is called before the first frame update
     void Start()

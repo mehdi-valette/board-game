@@ -109,12 +109,11 @@ public class TileGroup
 
         toVisit.Push(root);
 
-        // TODO: fix the algorithm, it doesn't see all the tiles it should visit
         while (toVisit.Count > 0)
         {
             var currentTile = toVisit.Pop();
             if (visited.Contains(currentTile)) continue;
-            foreach (var neighbour in root.GetNeighbours())
+            foreach (var neighbour in currentTile.GetNeighbours())
             {
                 if (Tile.IsFriendlyNeighbour(neighbour, root.GetTileCamp()) && !visited.Contains(neighbour))
                 {

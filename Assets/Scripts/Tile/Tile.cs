@@ -224,6 +224,7 @@ public class Tile : MonoBehaviour
         if (candidateGroup == null) return;
 
         currentPiece = board.GetPiece();
+        board.GetGhost().gameObject.SetActive(false);
 
         currentPiece.transform.position = piecePosition;
 

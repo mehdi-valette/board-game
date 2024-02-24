@@ -4,10 +4,10 @@ using UnityEngine;
 
 public enum PieceCamp
 {
-    Nature, Neutral
+    Nature, Money, Neutral
 }
 
-public enum PieceType
+public enum PieceClass
 {
     Empty, Temple, Devotee
 }
@@ -15,14 +15,14 @@ public enum PieceType
 public class Piece : MonoBehaviour
 {
     public PieceCamp pieceCamp;
-    public PieceType pieceType;
+    public PieceClass pieceType;
 
     public PieceCamp GetPieceCamp()
     {
         return pieceCamp;
     }
 
-    public PieceType GetPieceType() { 
+    public PieceClass GetPieceType() { 
         return pieceType;
     }
 }

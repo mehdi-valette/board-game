@@ -8,32 +8,57 @@ public class Board : MonoBehaviour
 {
     public Piece natureDevotee;
     public Piece natureTemple;
+    public Piece moneyDevotee;
+    public Piece moneyTemple;
 
     private Piece ghost;
-    private List<TileGroup> groups;
-    private string id;
+    private Piece activePiece;
 
     // Start is called before the first frame update
     void Start()
     {
-        groups = new List<TileGroup>();
+        activePiece = moneyDevotee;
 
-        ghost = Instantiate(natureDevotee);
+        ghost = Instantiate(activePiece);
         ChangeAlpha(ghost.gameObject, 0.5f);
         ghost.gameObject.SetActive(false);
 
-        var childCount = gameObject.transform.childCount;
-        int childId = Random.Range(0, childCount - 1);
+        var allTile = GetComponentsInChildren<Tile>();
+        foreach (var tile in allTile)
+        {
+            tile.Init();
 
-        var firstTempleTile = gameObject
-            .transform
-            .GetChild(childId)
-            .GetComponent<Tile>();
+            if (tile.GetNeighboursCount() == 2)
+            {
+                var neighbours = tile.GetNeighbours();
+                if (neighbours[1] != null && neighbours[2] != null)
+                {
+                    tile.SetPiece(moneyTemple);
+                    new TileGroup(new HashSet<Tile> { tile });
+                }
+                else if (neighbours[3] != null && neighbours[4] != null)
+                {
+                    tile.SetPiece(natureTemple);
+                    new TileGroup(new HashSet<Tile> { tile });
+                }
+            }
 
-        firstTempleTile.SetPiece(natureTemple);
-        var firstGroup = new TileGroup(new HashSet<Tile> { firstTempleTile });
+            if (tile.GetNeighboursCount() == 3)
+            {
+                var neighbours = tile.GetNeighbours();
+                if (neighbours[0] != null && neighbours[1] != null && neighbours[5] != null)
+                {
+                    tile.SetPiece(natureTemple);
+                    new TileGroup(new HashSet<Tile> { tile });
+                }
+                else if (neighbours[0] != null && neighbours[4] != null && neighbours[5] != null)
+                {
+                    tile.SetPiece(moneyTemple);
+                    new TileGroup(new HashSet<Tile> { tile });
+                }
+            }
+        }
 
-        groups.Add(firstGroup);
     }
 
     static void ChangeAlpha(GameObject gameObject, float alpha) {
@@ -74,11 +99,11 @@ public class Board : MonoBehaviour
 
     public Piece GetPiece()
     {
-        return Instantiate(natureDevotee);
+        return Instantiate(activePiece);
     }
 
     public PieceCamp GetPieceCamp()
     {
-        return PieceCamp.Nature;
+        return activePiece.GetPieceCamp();
     }
 }

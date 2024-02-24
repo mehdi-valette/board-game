@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +14,35 @@ public class Tile : MonoBehaviour
 
     private Piece currentPiece;
     private ushort neighboursCount;
-    private List<Tile> neighbours;
+    private Tile[] neighbours;
     private Vector3 piecePosition;
     private TileGroup tileGroup;
+    private Boolean initialized = false;
 
     private void Awake()
     {
         tileGroup = null;
     }
 
+    public void Init()
+    {
+        Start();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        if(initialized) return;
+
         neighbours = Neighbours.GetNeighbours(transform);
+        neighboursCount = 0;
+        foreach(var neighbour in neighbours)
+        {
+            if(neighbour != null)
+            {
+                neighboursCount++;
+            }
+        }
 
         piecePosition.x = transform.position.x;
         piecePosition.y = transform.position.y + 0.2f;
@@ -35,6 +52,8 @@ public class Tile : MonoBehaviour
         {
             currentPiece.transform.position = piecePosition;
         }
+
+        initialized = true;
     }
 
     // Update is called once per frame
@@ -42,9 +61,14 @@ public class Tile : MonoBehaviour
     {
     }
 
-    public List<Tile> GetNeighbours()
+    public Tile[] GetNeighbours()
     {
         return neighbours;
+    }
+
+    public uint GetNeighboursCount()
+    {
+        return neighboursCount;
     }
 
     public Piece GetPiece()
@@ -73,11 +97,11 @@ public class Tile : MonoBehaviour
         this.tileGroup = group;
     }
 
-    public PieceType GetTileType()
+    public PieceClass GetTileType()
     {
         if(currentPiece == null)
         {
-            return PieceType.Empty;
+            return PieceClass.Empty;
         }
 
         return currentPiece.GetPieceType();
@@ -131,7 +155,7 @@ public class Tile : MonoBehaviour
 
     private void RemoveTileFromGroup()
     {
-        if(currentPiece == null || currentPiece.GetPieceType() == PieceType.Temple)
+        if(currentPiece == null || currentPiece.GetPieceType() == PieceClass.Temple)
         {
             return;
         }
@@ -143,17 +167,9 @@ public class Tile : MonoBehaviour
 
     static public bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
     {
-        if (neighbour.GetTileGroup() == null)
-        {
-            return false;
-        }
-
-        if (neighbour.GetTileCamp() != camp)
-        {
-            return false;
-        }
-
-        return true;
+        return neighbour != null &&
+            neighbour.GetTileGroup() != null &&
+            neighbour.GetTileCamp() == camp;
     }
 
     private bool CanPlacePiece(PieceCamp camp)

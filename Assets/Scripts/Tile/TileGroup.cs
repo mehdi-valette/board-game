@@ -11,7 +11,7 @@ public class TileGroup
     {
         foreach (var member in members)
         {
-            if (member.GetTileType() == PieceType.Temple)
+            if (member.GetTileType() == PieceClass.Temple)
             {
                 anchors.Add(member);
             }
@@ -26,7 +26,7 @@ public class TileGroup
 
     public void AddMember(Tile member)
     {
-        if (member.GetTileType() == PieceType.Temple)
+        if (member.GetTileType() == PieceClass.Temple)
         {
             anchors.Add(member);
         }
@@ -40,7 +40,7 @@ public class TileGroup
 
     public void RemoveMember(Tile removedMember)
     {
-        if (removedMember.GetTileType() == PieceType.Temple)
+        if (removedMember.GetTileType() == PieceClass.Temple)
         {
             anchors.Remove(removedMember);
         }

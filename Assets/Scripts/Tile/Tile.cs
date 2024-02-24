@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 public class Tile : MonoBehaviour
 {
@@ -120,10 +121,6 @@ public class Tile : MonoBehaviour
         board.GetGhost().gameObject.SetActive(false);
     }
 
-    private void FixedUpdate()
-    {
-    }
-
     public void ClearTile()
     {
         if (currentPiece == null) return;
@@ -220,6 +217,8 @@ public class Tile : MonoBehaviour
 
     private void PlacePiece()
     {
+        if (currentPiece != null) return;
+
         var candidateGroup = GetGroupForInsert(board.GetPieceCamp());
         if (candidateGroup == null) return;
 

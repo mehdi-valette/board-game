@@ -25,9 +25,4 @@ public class Piece : MonoBehaviour
     public PieceType GetPieceType() { 
         return pieceType;
     }
-
-    public bool IsPieceEqual(Piece otherPiece)
-    {
-        return otherPiece != null && otherPiece.pieceType == pieceType && otherPiece.pieceCamp == pieceCamp;
-    }
 }

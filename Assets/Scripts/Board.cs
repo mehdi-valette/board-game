@@ -10,18 +10,16 @@ public class Board : MonoBehaviour
     public Piece natureTemple;
     public Piece moneyDevotee;
     public Piece moneyTemple;
+    public UserInterface userInterface;
 
-    private Piece ghost;
     private Piece activePiece;
+    private uint turn;
 
     // Start is called before the first frame update
     void Start()
     {
+        turn = 0;
         activePiece = moneyDevotee;
-
-        ghost = Instantiate(activePiece);
-        ChangeAlpha(ghost.gameObject, 0.5f);
-        ghost.gameObject.SetActive(false);
 
         var allTile = GetComponentsInChildren<Tile>();
         foreach (var tile in allTile)
@@ -94,12 +92,27 @@ public class Board : MonoBehaviour
 
     public Piece GetGhost()
     {
+        var ghost = Instantiate(activePiece);
+        ChangeAlpha(ghost.gameObject, 0.5f);
         return ghost;
     }
 
     public Piece GetPiece()
     {
-        return Instantiate(activePiece);
+        var previousPiece = Instantiate(activePiece);
+
+        turn++;
+        if(turn % 2 == 0 )
+        {
+            activePiece = moneyDevotee;
+        } else
+        {
+            activePiece = natureDevotee;
+        }
+
+        userInterface.SetPieceCamp(activePiece.GetPieceCamp());
+
+        return previousPiece;
     }
 
     public PieceCamp GetPieceCamp()

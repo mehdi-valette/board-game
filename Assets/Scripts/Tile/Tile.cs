@@ -13,6 +13,7 @@ public class Tile : MonoBehaviour
     public Board board;
 
     private Piece currentPiece;
+    private Piece ghost;
     private ushort neighboursCount;
     private Tile[] neighbours;
     private Vector3 piecePosition;
@@ -140,9 +141,11 @@ public class Tile : MonoBehaviour
 
     public void OnMouseExit()
     {
-        if(currentPiece != null) return;
-
-        board.GetGhost().gameObject.SetActive(false);
+        if (ghost != null)
+        {
+            Destroy(ghost.gameObject);
+            ghost = null;
+        }
     }
 
     public void ClearTile()
@@ -224,9 +227,10 @@ public class Tile : MonoBehaviour
     {
         if (!CanPlacePiece(board.GetPieceCamp())) return;
 
-        var ghost = board.GetGhost();
-
-        ghost.gameObject.SetActive(true);
+        if (ghost == null)
+        {
+            ghost = board.GetGhost();
+        }
 
         ghost.transform.SetPositionAndRotation(piecePosition, transform.rotation);
     }
@@ -239,7 +243,11 @@ public class Tile : MonoBehaviour
         if (candidateGroup == null) return;
 
         currentPiece = board.GetPiece();
-        board.GetGhost().gameObject.SetActive(false);
+        if(ghost != null)
+        {
+            Destroy(ghost.gameObject);
+            ghost = null;
+        }
 
         currentPiece.transform.position = piecePosition;
 

@@ -11,7 +11,6 @@ using static UnityEditor.PlayerSettings;
 public class Tile : MonoBehaviour
 {
     public Board board;
-
     public ushort deleteCount = 4;
 
     private Piece currentPiece;
@@ -95,19 +94,19 @@ public class Tile : MonoBehaviour
         return tileGroup;
     }
 
-    public void SetGroup(TileGroup group)
+    public void SetTileGroup(TileGroup group)
     {
         this.tileGroup = group;
     }
 
-    public PieceClass GetTileType()
+    public PieceClass GetTileClass()
     {
         if(currentPiece == null)
         {
             return PieceClass.Empty;
         }
 
-        return currentPiece.GetPieceType();
+        return currentPiece.GetPieceClass();
     }
 
     public PieceCamp GetTileCamp()
@@ -150,7 +149,7 @@ public class Tile : MonoBehaviour
     //removes the piece if it's surrounded by ennemies
     public void CheckNeighbours()
     {
-        if(currentPiece == null || GetTileType() == PieceClass.Empty)
+        if(currentPiece == null || GetTileClass() == PieceClass.Empty)
         {
             return;
         }
@@ -174,7 +173,7 @@ public class Tile : MonoBehaviour
 
     private void RemoveTileFromGroup()
     {
-        if(currentPiece == null || currentPiece.GetPieceType() == PieceClass.Temple)
+        if(currentPiece == null || currentPiece.GetPieceClass() == PieceClass.Temple)
         {
             return;
         }

@@ -16,14 +16,14 @@ public enum PieceClass
 public class Piece : MonoBehaviour
 {
     public PieceCamp pieceCamp;
-    public PieceClass pieceType;
+    public PieceClass pieceClass;
 
     public PieceCamp GetPieceCamp()
     {
         return pieceCamp;
     }
 
-    public PieceClass GetPieceType() { 
-        return pieceType;
+    public PieceClass GetPieceClass() { 
+        return pieceClass;
     }
 }

@@ -78,4 +78,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pieceCamp: 0
-  pieceType: 2
+  pieceClass: 2

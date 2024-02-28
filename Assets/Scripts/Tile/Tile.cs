@@ -12,6 +12,8 @@ public class Tile : MonoBehaviour
 {
     public Board board;
 
+    public ushort deleteCount = 4;
+
     private Piece currentPiece;
     private Piece ghost;
     private ushort neighboursCount;
@@ -118,11 +120,6 @@ public class Tile : MonoBehaviour
         return currentPiece.GetPieceCamp();
     }
 
-    public bool IsTempleConnected()
-    {
-        return tileGroup != null;
-    }
-
     public void OnMouseDown()
     {
         if(Input.GetKey(KeyCode.LeftShift))
@@ -156,6 +153,31 @@ public class Tile : MonoBehaviour
         currentPiece = null;
     }
 
+    //removes the piece if it's surrounded by ennemies
+    public void CheckNeighbours()
+    {
+        if(currentPiece == null || GetTileType() == PieceClass.Empty)
+        {
+            return;
+        }
+
+        Dictionary<PieceCamp, ushort> ennemies = new();
+        foreach(var neighbour in GetNeighbours())
+        {
+            if(Neighbours.IsHostileNeighbour(neighbour, GetTileCamp()))
+            {
+                ennemies.TryGetValue(neighbour.GetTileCamp(), out ushort ennemiesCount);
+                if(ennemiesCount + 1 >= deleteCount)
+                {
+                    RemoveTileFromGroup();
+                    break;
+                }
+
+                ennemies[neighbour.GetTileCamp()] = (ushort)(ennemiesCount + 1);
+            }
+        }
+    }
+
     private void RemoveTileFromGroup()
     {
         if(currentPiece == null || currentPiece.GetPieceType() == PieceClass.Temple)
@@ -168,13 +190,6 @@ public class Tile : MonoBehaviour
         tileGroup.RemoveMember(this);
     }
 
-    static public bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
-    {
-        return neighbour != null &&
-            neighbour.GetTileGroup() != null &&
-            neighbour.GetTileCamp() == camp;
-    }
-
     private bool CanPlacePiece(PieceCamp camp)
     {
         if (GetTileCamp() != PieceCamp.Neutral)
@@ -184,7 +199,7 @@ public class Tile : MonoBehaviour
 
         foreach (var neighbour in neighbours)
         {
-            if (IsFriendlyNeighbour(neighbour, camp))
+            if (Neighbours.IsFriendlyNeighbour(neighbour, camp))
             {
                 return true;
             }
@@ -199,7 +214,7 @@ public class Tile : MonoBehaviour
 
         foreach(var neighbour in neighbours)
         {
-            if (IsFriendlyNeighbour(neighbour, camp))
+            if (Neighbours.IsFriendlyNeighbour(neighbour, camp))
             {
                 groups.Add(neighbour.GetTileGroup());
             }
@@ -252,5 +267,13 @@ public class Tile : MonoBehaviour
         currentPiece.transform.position = piecePosition;
 
         candidateGroup.AddMember(this);
+
+        foreach(var neighbour in GetNeighbours())
+        {
+            if(Neighbours.IsHostileNeighbour(neighbour, GetTileCamp()))
+            {
+                neighbour.CheckNeighbours();
+            }
+        }
     }
 }

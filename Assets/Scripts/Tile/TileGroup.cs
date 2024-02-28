@@ -115,7 +115,7 @@ public class TileGroup
             if (visited.Contains(currentTile)) continue;
             foreach (var neighbour in currentTile.GetNeighbours())
             {
-                if (Tile.IsFriendlyNeighbour(neighbour, root.GetTileCamp()) && !visited.Contains(neighbour))
+                if (Neighbours.IsFriendlyNeighbour(neighbour, root.GetTileCamp()) && !visited.Contains(neighbour))
                 {
                     toVisit.Push(neighbour);
                 }

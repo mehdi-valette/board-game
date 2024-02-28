@@ -11,6 +11,7 @@ public class Board : MonoBehaviour
     public Piece moneyDevotee;
     public Piece moneyTemple;
     public UserInterface userInterface;
+    public ushort actionsPerTurn = 3;
 
     private Piece activePiece;
     private uint turn;
@@ -102,7 +103,7 @@ public class Board : MonoBehaviour
         var previousPiece = Instantiate(activePiece);
 
         turn++;
-        if(turn % 2 == 0 )
+        if((turn / actionsPerTurn) % 2 == 0 )
         {
             activePiece = moneyDevotee;
         } else

@@ -5,7 +5,7 @@ using UnityEngine;
 
 class Neighbours
 {
-    public static Tile[] GetNeighbours(Transform transform)
+    static public Tile[] GetNeighbours(Transform transform)
     {
         var neighbours = new Tile[6];
         var directions = GetDirections(transform);
@@ -29,7 +29,7 @@ class Neighbours
         return neighbours;
     }
 
-    private static Vector3[] GetDirections(Transform transform)
+    static private Vector3[] GetDirections(Transform transform)
     {
         var directions = new Vector3[6];
 
@@ -62,5 +62,19 @@ class Neighbours
         directions[5] = transform.position - topLeft;
 
         return directions;
+    }
+
+    static public bool IsFriendlyNeighbour(Tile neighbour, PieceCamp camp)
+    {
+        return neighbour != null &&
+            neighbour.GetTileGroup() != null &&
+            neighbour.GetTileCamp() == camp;
+    }
+
+    static public bool IsHostileNeighbour(Tile neighbour, PieceCamp camp)
+    {
+        return neighbour != null &&
+            neighbour.GetTileCamp() != PieceCamp.Neutral &&
+            neighbour.GetTileCamp() != camp;
     }
 }

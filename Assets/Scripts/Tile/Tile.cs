@@ -122,12 +122,6 @@ public class Tile : MonoBehaviour
 
     public void OnMouseDown()
     {
-        if(Input.GetKey(KeyCode.LeftShift))
-        {
-            RemoveTileFromGroup();
-            return;
-        }
-
         PlacePiece();
     }
 

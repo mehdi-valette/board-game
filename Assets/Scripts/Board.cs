@@ -22,6 +22,15 @@ public class Board : MonoBehaviour
         turn = 0;
         activePiece = moneyDevotee;
 
+        userInterface.Init();
+        userInterface.SetPieceCamp(activePiece.GetPieceCamp());
+
+        PlaceTemples();
+    }
+
+    private void PlaceTemples()
+    {
+
         var allTile = GetComponentsInChildren<Tile>();
         foreach (var tile in allTile)
         {
@@ -57,7 +66,6 @@ public class Board : MonoBehaviour
                 }
             }
         }
-
     }
 
     static void ChangeAlpha(GameObject gameObject, float alpha) {

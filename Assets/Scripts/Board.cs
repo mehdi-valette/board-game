@@ -68,29 +68,6 @@ public class Board : MonoBehaviour
         }
     }
 
-    static void ChangeAlpha(GameObject gameObject, float alpha) {
-
-        var childCount = gameObject.transform.childCount;
-
-        for (int i = 0; i < childCount; i++)
-        {
-            var child = gameObject.transform.GetChild(i);
-
-            var renderer = child.GetComponent<Renderer>();
-
-            if (renderer == null) continue;
-
-            var mat = renderer.material;
-
-            if (mat == null) continue;
-
-            var newColor = mat.color;
-            newColor.a = alpha;
-            mat.SetColor("_Color", newColor);
-        }
-
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -102,7 +79,7 @@ public class Board : MonoBehaviour
     public Piece GetGhost()
     {
         var ghost = Instantiate(activePiece);
-        ChangeAlpha(ghost.gameObject, 0.5f);
+        ghost.MakeGhost();
         return ghost;
     }
 

@@ -133,7 +133,7 @@ public class Tile : MonoBehaviour
     {
         if (ghost != null)
         {
-            Destroy(ghost.gameObject);
+            ghost.Remove();
             ghost = null;
         }
     }
@@ -142,7 +142,7 @@ public class Tile : MonoBehaviour
     {
         if (currentPiece == null) return;
 
-        Destroy(currentPiece.gameObject);
+        currentPiece.Remove();
         currentPiece = null;
     }
 
@@ -253,7 +253,7 @@ public class Tile : MonoBehaviour
         currentPiece = board.GetPiece();
         if(ghost != null)
         {
-            Destroy(ghost.gameObject);
+            ghost.Remove();
             ghost = null;
         }
 

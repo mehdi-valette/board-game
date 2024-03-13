@@ -33,27 +33,40 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-        if(isRemoving && transparency <= 0)
+        if(Removing() || Appearing())
+        {
+            UpdateTransparency();
+        }
+    }
+
+    private bool Removing()
+    {
+        if(!isRemoving)
+        {
+            return false;
+        }
+
+        if (transparency <= 0)
         {
             Destroy(gameObject);
-            return;
+            return false;
         }
 
-        if (!isRemoving && transparency >= maxTransparency)
+        transparency -= (float)(maxTransparency * 3 * Time.deltaTime);
+
+        return true;
+    }
+
+    private bool Appearing()
+    {
+        if (isRemoving || transparency >= maxTransparency)
         {
-            return;
+            return false;
         }
 
+        transparency += (float)(maxTransparency * 3 * Time.deltaTime);
 
-        if (isRemoving)
-        {
-            transparency = transparency - (float)(maxTransparency * 3 * Time.deltaTime);
-        } else
-        {
-            transparency = transparency + (float)(maxTransparency * 3 * Time.deltaTime);
-        }
-
-        UpdateTransparency();
+        return true;
     }
 
     public void Remove()

@@ -348,7 +348,7 @@ MonoBehaviour:
   natureDevotee: {fileID: 7260091078199263456, guid: 998fc6cd81f7d5849a344dd58eb7eeab, type: 3}
   natureTemple: {fileID: -3657904565120839203, guid: 6d6fd8b568a0b404983675186440850c, type: 3}
   moneyDevotee: {fileID: 3090346999651203088, guid: dbe5e550735c4d145b6612929562083c, type: 3}
-  moneyTemple: {fileID: 6285601246890461255, guid: 0bb573af7370fc046b982a831fb3b139, type: 3}
+  moneyTemple: {fileID: 3918152092486301644, guid: 0bb573af7370fc046b982a831fb3b139, type: 3}
   userInterface: {fileID: 1717512118}
   actionsPerTurn: 10
 --- !u!65 &263185243
